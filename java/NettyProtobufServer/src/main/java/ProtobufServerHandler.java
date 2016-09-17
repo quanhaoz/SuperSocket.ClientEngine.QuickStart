@@ -12,25 +12,25 @@ public class ProtobufServerHandler extends ChannelInboundHandlerAdapter {
 
         try {
             DefeatMessageOuterClass.DefeatMessage in = (DefeatMessageOuterClass.DefeatMessage) msg;
-           if(in.getType() == DefeatMessageOuterClass.DefeatMessage.Type.BackMessage){
-               System.out.print("BackMessage:");
-               System.out.print(in.getBackMessage());
-               System.out.flush();
-           }else if(in.getType() == DefeatMessageOuterClass.DefeatMessage.Type.CallMessage){
-               System.out.print("CallMessage:");
-               System.out.print(in.getCallMessage());
-               System.out.flush();
+            if (in.getType() == DefeatMessageOuterClass.DefeatMessage.Type.BackMessage) {
+                System.out.print("BackMessage:");
+                System.out.print(in.getBackMessage());
+                System.out.flush();
+            } else if (in.getType() == DefeatMessageOuterClass.DefeatMessage.Type.CallMessage) {
+                System.out.print("CallMessage:");
+                System.out.print(in.getCallMessage());
+                System.out.flush();
 
-               DefeatMessageOuterClass.DefeatMessage out =
-                       DefeatMessageOuterClass.DefeatMessage.newBuilder()
-                               .setType(DefeatMessageOuterClass.DefeatMessage.Type.BackMessage)
-                               .setBackMessage(BackMessageOuterClass.BackMessage
-                                       .newBuilder().setContent("Hello I from server by Java Netty").build())
-                               .build();
+                DefeatMessageOuterClass.DefeatMessage out =
+                        DefeatMessageOuterClass.DefeatMessage.newBuilder()
+                                .setType(DefeatMessageOuterClass.DefeatMessage.Type.BackMessage)
+                                .setBackMessage(BackMessageOuterClass.BackMessage
+                                        .newBuilder().setContent("Hello I from server by Java Netty").build())
+                                .build();
 
-               ctx.write(out);
-               ctx.flush();
-           }
+                ctx.write(out);
+                ctx.flush();
+            }
 
         } finally {
             ReferenceCountUtil.release(msg); // (2)

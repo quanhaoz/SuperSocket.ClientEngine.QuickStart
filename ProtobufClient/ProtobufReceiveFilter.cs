@@ -1,4 +1,4 @@
-﻿using Google.ProtocolBuffers;
+﻿using Google.Protobuf;
 using SuperSocket.ProtoBase;
 
 namespace ProtobufClient
@@ -26,8 +26,8 @@ namespace ProtobufClient
             var buffStream = new BufferStream();
             buffStream.Initialize(data);
 
-            var stream = CodedInputStream.CreateInstance(buffStream);
-            var varint32 = (int) stream.ReadRawVarint32();
+            var stream = new CodedInputStream(buffStream);
+            var varint32 = (int) stream.ReadInt32();
             if (varint32 <= 0) return default(ProtobufPackageInfo);
 
             var total = data.Total;
@@ -36,8 +36,8 @@ namespace ProtobufClient
             if (total >= packageLen)
             {
                 rest = total - packageLen;
-                var body = stream.ReadRawBytes(varint32);
-                var message = DefeatMessage.ParseFrom(body);
+                var body = stream.ReadBytes();
+                var message = DefeatMessage.Parser.ParseFrom(body);
                 var requestInfo = new ProtobufPackageInfo(message.Type, message);
                 return requestInfo;
             }
