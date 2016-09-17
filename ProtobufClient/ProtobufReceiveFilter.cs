@@ -1,5 +1,7 @@
 ﻿using Google.Protobuf;
 using SuperSocket.ProtoBase;
+using System;
+using System.IO;
 
 namespace ProtobufClient
 {
@@ -27,22 +29,38 @@ namespace ProtobufClient
             buffStream.Initialize(data);
 
             var stream = new CodedInputStream(buffStream);
-            var varint32 = (int) stream.ReadInt32();
-            if (varint32 <= 0) return default(ProtobufPackageInfo);
 
-            var total = data.Total;
-            var packageLen = varint32 + (int) stream.Position;
+            //var varint32 = stream.ReadInt32();
+            //var varint32 = (int) stream.ReadInt32();
+            //var varint32=(int)ReadRawVarint32(buffStream);
+            //if (varint32 <= 0) return default(ProtobufPackageInfo);
 
-            if (total >= packageLen)
+            //var total = data.Total;
+            //var packageLen = varint32 + (int) stream.Position;
+
+            //if (total >= packageLen)
+            //{
+            //    rest = total - packageLen;
+            //    var body = stream.ReadBytes();
+            //    var message = DefeatMessage.Parser.ParseFrom(body);
+            //    var requestInfo = new ProtobufPackageInfo(message.Type, message);
+            //    return requestInfo;
+            //}
+
+            //rest = total - packageLen;
+            var body = stream.ReadBytes();
+
+            
+
+            var message = DefeatMessage.Parser.ParseFrom(body);
+
+            if (data.Total >= stream.Position)
             {
-                rest = total - packageLen;
-                var body = stream.ReadBytes();
-                var message = DefeatMessage.Parser.ParseFrom(body);
-                var requestInfo = new ProtobufPackageInfo(message.Type, message);
-                return requestInfo;
+                rest = data.Total - (int)stream.Position;
             }
 
-            return default(ProtobufPackageInfo);
+            var requestInfo = new ProtobufPackageInfo(message.Type, message);
+            return requestInfo;
         }
 
         public IReceiveFilter<ProtobufPackageInfo> NextReceiveFilter { get; protected set; }
@@ -53,5 +71,6 @@ namespace ProtobufClient
             NextReceiveFilter = null;
             State = FilterState.Normal;
         }
+
     }
 }

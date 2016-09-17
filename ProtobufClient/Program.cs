@@ -27,29 +27,36 @@ namespace ProtobufClient
 		    var flag = client.ConnectAsync(new DnsEndPoint("127.0.0.1", 2012));
 		    if (flag.Result)
 		    {
-                var callMessage = (new CallMessage());
-                callMessage.Content =("Hello I am form C# client by SuperSocket ClientEngine");
-                var message = new DefeatMessage();
-                message.CallMessage = callMessage;
-		            //.SetType(DefeatMessage.Types.Type.CallMessage)
-		            //.SetCallMessage(callMessage).Build();
+               
+		           
 
                 using (var stream = new MemoryStream())
                 {
 
                     CodedOutputStream os = new CodedOutputStream(stream);
 
-                    os.WriteMessage(message);
+                    for (int i = 0; i < 10; i++)
+                    {
+                        var callMessage = (new CallMessage());
+                        callMessage.Content = ("Hello I am form C# client by SuperSocket ClientEngine "+i);
+                        var message = new DefeatMessage();
+                        message.CallMessage = callMessage;
 
-                    os.Flush();
+                        os.WriteMessage(message);
 
-                    byte[] data = stream.ToArray();
-					client.Send(new ArraySegment<byte>(data));
+                        os.Flush();
+
+                        byte[] data = stream.ToArray();
+                        client.Send(new ArraySegment<byte>(data));
+                        stream.Position = 0;
+                     
+                    }
                    
                 }
                 
             }
             Console.ReadKey();
         }
-	}
+
+    }
 }
